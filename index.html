@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Սովորությունների Թրեքեր</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Tokens ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0c0c0e;
+  --s1:       #141417;
+  --s2:       #1b1b1f;
+  --s3:       #222227;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --text:     #f0ede8;
+  --text2:    #98948f;
+  --text3:    #55524f;
+  --gold:     #c8923a;
+  --golddim:  rgba(200,146,58,0.14);
+  --green:    #4a8a5c;
+  --red:      #b84f4f;
+  --r:        12px;
+  --sw:       210px;
+  --font-d:   'Cormorant Garamond', Georgia, serif;
+  --font-s:   'Jost', system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-s);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+  font-size: 15px;
+}
+
+/* Grain */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: .032;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sw);
+  height: 100vh;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 2.2rem 0 1.8rem;
+  flex-shrink: 0;
+  position: fixed;
+  left: 0; top: 0;
+}
+
+.logo {
+  font-family: var(--font-d);
+  font-size: 1.45rem;
+  font-style: italic;
+  color: var(--gold);
+  text-align: center;
+  letter-spacing: .12em;
+  margin-bottom: 2.8rem;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: .65rem 1.6rem;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  font-family: var(--font-s);
+  font-size: .72rem;
+  font-weight: 400;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--text3);
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background .18s;
+  text-align: left;
+}
+.nav-btn:hover { color: var(--text2); background: rgba(255,255,255,.025); }
+.nav-btn.active { color: var(--gold); border-left-color: var(--gold); background: var(--golddim); }
+
+.nav-icon { font-size: 14px; opacity: .7; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 0 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-date {
+  font-size: .68rem;
+  color: var(--text3);
+  line-height: 1.7;
+  letter-spacing: .04em;
+}
+.sidebar-footer a {
+  font-size: .68rem;
+  color: var(--text3);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: color .2s;
+}
+
+.sidebar-footer a:hover {
+  color: var(--gold);
+}
+/* ── Main ───────────────────────────────────────────────────── */
+.main {
+  margin-left: var(--sw);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 2.8rem 2.8rem 5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--s3) transparent;
+}
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 3px; }
+
+/* ── Pages ──────────────────────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .28s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Page Header ────────────────────────────────────────────── */
+.ph {
+  margin-bottom: 2rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.ph-title {
+  font-family: var(--font-d);
+  font-size: 2.4rem;
+  font-weight: 400;
+  letter-spacing: .02em;
+  line-height: 1;
+}
+.ph-sub {
+  font-size: .74rem;
+  color: var(--text3);
+  letter-spacing: .06em;
+  margin-top: 6px;
+}
+
+/* ── Stats ──────────────────────────────────────────────────── */
+.stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.4rem; }
+.stat {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.1rem 1.2rem;
+}
+.stat-val {
+  font-family: var(--font-d);
+  font-size: 2.1rem;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.stat-lbl { font-size: .68rem; color: var(--text3); letter-spacing: .09em; text-transform: uppercase; }
+
+/* ── Card ───────────────────────────────────────────────────── */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.4rem 1.5rem;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-size: .66rem;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  color: var(--text3);
+  margin-bottom: 1.1rem;
+}
+
+/* ── Habit Rows (Today) ─────────────────────────────────────── */
+.hrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hrow:last-child { border-bottom: none; }
+
+.ckbtn {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s, border-color .18s;
+  position: relative;
+}
+.ckbtn.on { background: var(--gold); border-color: var(--gold); }
+.ckbtn.on::after {
+  content: '';
+  width: 7px; height: 4px;
+  border-left: 1.5px solid #0c0c0e;
+  border-bottom: 1.5px solid #0c0c0e;
+  transform: rotate(-45deg) translateY(-1px);
+  display: block;
+}
+
+.hinfo { flex: 1; min-width: 0; }
+.hname {
+  font-size: .87rem;
+  color: var(--text);
+  margin-bottom: 5px;
+  transition: color .18s;
+}
+.hname.x { color: var(--text3); text-decoration: line-through; }
+
+.ptrack { display: flex; align-items: center; gap: 8px; }
+.pbar { flex: 1; height: 2px; background: var(--s3); border-radius: 2px; overflow: hidden; }
+.pfill { height: 100%; background: var(--gold); border-radius: 2px; transition: width .4s ease; }
+.pfill.full { background: var(--green); }
+.pcnt { font-size: .67rem; color: var(--text3); white-space: nowrap; }
+
+/* ── Journal ────────────────────────────────────────────────── */
+.jarea {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .9rem 1rem;
+  color: var(--text);
+  font-family: var(--font-s);
+  font-size: .85rem;
+  line-height: 1.75;
+  resize: none;
+  outline: none;
+  transition: border-color .18s;
+}
+.jarea:focus { border-color: rgba(200,146,58,.4); }
+.jarea::placeholder { color: var(--text3); }
+
+.saved-toast {
+  display: inline-block;
+  font-size: .7rem;
+  color: var(--green);
+  letter-spacing: .06em;
+  margin-left: 10px;
+  opacity: 0;
+  transition: opacity .3s;
+}
+.saved-toast.show { opacity: 1; }
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn {
+  background: var(--gold);
+  color: #0c0c0e;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--font-s);
+  transition: opacity .18s, transform .1s;
+}
+.btn:hover { opacity: .84; }
+.btn:active { transform: scale(.97); }
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: .72rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--font-s);
+  transition: color .18s, border-color .18s;
+}
+.btn-ghost:hover { color: var(--text2); border-color: var(--gold); }
+
+/* ── Add Form ───────────────────────────────────────────────── */
+.aform { display: flex; flex-direction: column; gap: 10px; }
+.frow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ifield {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-size: .85rem;
+  font-family: var(--font-s);
+  outline: none;
+  transition: border-color .18s;
+}
+.ifield:focus { border-color: rgba(200,146,58,.45); }
+.ifield::placeholder { color: var(--text3); }
+.ifield-main { flex: 1; min-width: 200px; }
+.ifield-num { width: 70px; }
+
+/* ── Manage List ────────────────────────────────────────────── */
+.mrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  transition: opacity .15s;
+}
+.mrow:last-child { border-bottom: none; }
+.mdot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.mname { flex: 1; font-size: .87rem; color: var(--text2); }
+.mfreq { font-size: .7rem; color: var(--text3); white-space: nowrap; }
+.delbtn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+.delbtn:hover { color: var(--red); background: rgba(184,79,79,.12); }
+
+/* ── Calendar ───────────────────────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+.calnav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.caltitle { font-family: var(--font-d); font-size: 1.25rem; letter-spacing: .04em; }
+.calbtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text3);
+  width: 28px; height: 28px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s, border-color .15s;
+}
+.calbtn:hover { color: var(--text); border-color: var(--border2); }
+
+.cg { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cdn { text-align: center; font-size: .62rem; letter-spacing: .08em; color: var(--text3); padding: 4px 0; text-transform: uppercase; }
+.cday {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .76rem;
+  color: var(--text3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  position: relative;
+}
+.cday:hover:not(.empty) { background: var(--s2); color: var(--text2); }
+.cday.today { color: var(--text); font-weight: 500; }
+.cday.has::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.cday.sel { background: var(--gold); color: #0c0c0e; font-weight: 500; }
+.cday.sel::after { display: none; }
+.cday.empty { pointer-events: none; }
+
+/* ── Week Progress ──────────────────────────────────────────── */
+.wpitem { margin-bottom: 13px; }
+.wpitem:last-child { margin-bottom: 0; }
+.wphead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.wpname { font-size: .84rem; color: var(--text2); }
+.wpnum { font-size: .69rem; color: var(--text3); }
+.wpbar { height: 4px; background: var(--s3); border-radius: 4px; overflow: hidden; }
+.wpfill { height: 100%; background: var(--gold); border-radius: 4px; transition: width .4s ease; }
+.wpfill.full { background: var(--green); }
+
+/* ── Day Detail ─────────────────────────────────────────────── */
+.dhi { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: .83rem; }
+.dhi:last-child { border-bottom: none; }
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+.empty-state { text-align: center; padding: 1.8rem; color: var(--text3); font-size: .82rem; letter-spacing: .04em; }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  :root { --sw: 0px; }
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 1.5rem 1.2rem 4rem; }
+  .two-col { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(3,1fr); }
+  .mobile-nav {
+    display: flex !important;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--s1);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+  }
+}
+.mobile-nav { display: none; }
+.mob-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: .9rem .5rem;
+  font-family: var(--font-s);
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  cursor: pointer;
+  transition: color .15s;
+}
+.mob-btn.active { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="logo">Ծնված հաղթելու համար</div>
+
+  <button class="nav-btn active" onclick="goTo('today',this)">
+    <span class="nav-icon">◉</span> Այսօր
+  </button>
+  <button class="nav-btn" onclick="goTo('habits',this)">
+    <span class="nav-icon">◈</span> Սովորություններ
+  </button>
+  <button class="nav-btn" onclick="goTo('progress',this)">
+    <span class="nav-icon">◇</span> Առաջընթաց
+  </button>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-date" id="sb-date"></div>
+  <a href="https://t.me/mejlumian" target="_blank">ԻՄ ՏԵԼԵԳՐԱՄԸ</a>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ══════════════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ── TODAY ─────────────────────────────────────────────────────────────── -->
+  <section class="page active" id="page-today">
+    <div class="ph">
+      <div class="ph-title" id="today-title">—</div>
+      <div class="ph-sub" id="today-sub"></div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="card">
+      <div class="card-title">Ամենօրյա սովորություններ</div>
+      <div id="today-habits"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Մոտիվացիա &amp; Նշումներ</div>
+      <textarea class="jarea" id="journal" rows="4"
+        placeholder="Ի՞նչ ես ուզում հիշել այսօր..."></textarea>
+      <div style="margin-top:10px; display:flex; align-items:center; gap:0;">
+        <button class="btn" onclick="saveJournal()">Պահել</button>
+        <span class="saved-toast" id="saved-toast">✓ Պահված</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HABITS ─────────────────────────────────────────────────────────────── -->
+  <section class="page" id="page-habits">
+    <div class="ph">
+      <div class="ph-title">Սովորություններ</div>
+      <div class="ph-sub">Կառավարիր քո ամենօրյա սովորությունները</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ավելացնել նոր սովորություն</div>
+      <div class="aform">
+        <input type="text" class="ifield ifield-main" id="h-name"
+          placeholder="Օրինակ՝ Կարդալ 30 րոպե..." />
+        <div class="frow">
+          <input type="number" class="ifield ifield-num" id="h-freq"
+            min="1" max="7" value="3" step="1" />
+          <span style="font-size:.8rem; color:var(--text3);">անգամ / շաբաթ &nbsp;(1–7)</span>
+          <button class="btn" onclick="addHabit()">+ Ավելացնել</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Բոլոր սովորությունները</div>
+      <div id="hmanage"></div>
+    </div>
+  </section>
+
+  <!-- ── PROGRESS ───────────────────────────────────────────────────────────── -->
+  <section class="page" id="page-progress">
+    <div class="ph">
+      <div class="ph-title">Առաջընթաց</div>
+      <div class="ph-sub">Ամսական օրացույց &amp; Շաբաթվա արդյունքներ</div>
+    </div>
+
+    <div class="two-col">
+      <!-- Calendar -->
+      <div class="card" style="margin-bottom:0;">
+        <div class="calnav">
+          <button class="calbtn" onclick="prevM()">&#8592;</button>
+          <span class="caltitle" id="cal-title"></span>
+          <button class="calbtn" onclick="nextM()">&#8594;</button>
+        </div>
+        <div class="cg" id="cal-hdr"></div>
+        <div class="cg" id="cal-body" style="margin-top:3px;"></div>
+      </div>
+
+      <!-- Day detail -->
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title" id="dd-title">Ընտրեք օր</div>
+        <div id="dd-body">
+          <div class="empty-state" style="padding:.8rem 0;">← Ընտրեք օր</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Week progress -->
+    <div class="card" style="margin-top:1rem;">
+      <div class="card-title">Այս շաբաթ</div>
+      <div id="week-prog"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-nav">
+  <button class="mob-btn active" onclick="goTo('today',this)">Այսօր</button>
+  <button class="mob-btn" onclick="goTo('habits',this)">Սովորություններ</button>
+  <button class="mob-btn" onclick="goTo('progress',this)">Պրոգրես</button>
+</nav>
+
+<!-- ═══ SCRIPT ═════════════════════════════════════════════════════════════════ -->
+<script>
+/* ── Constants ─────────────────────────────────────────────── */
+const AM = ['Հունվար','Փետրվար','Մարտ','Ապրիլ','Մայիս','Հունիս',
+             'Հուլիս','Օգոստոս','Սեպտեմբեր','Հոկտեմբեր','Նոյեմբեր','Դեկտեմբեր'];
+const AD = ['Երկ','Երք','Չոր','Հնգ','Ուրբ','Շաբ','Կիր'];
+const WEEKDAYS = ['Կիրակի','Երկուշաբթի','Երեքշաբթի','Չորեքշաբթի',
+                  'Հինգշաբթի','Ուրբաթ','Շաբաթ'];
+
+/* ── State ─────────────────────────────────────────────────── */
+let habits = [], comps = {}, jnl = {}, selDay = null;
+let calY, calM;
+
+/* ── Date helpers ───────────────────────────────────────────── */
+const pad  = n => String(n).padStart(2,'0');
+const toDS = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today= () => toDS(new Date());
+
+function weekStart(ds) {
+  const d = new Date(ds + 'T00:00:00');
+  const dow = d.getDay() || 7;        // Mon=1 … Sun=7
+  d.setDate(d.getDate() - dow + 1);
+  return toDS(d);
+}
+
+/* ── Storage ────────────────────────────────────────────────── */
+function load() {
+  const parse = (k,def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } };
+  habits = parse('m_habits', []);
+  comps  = parse('m_comps',  {});
+  jnl    = parse('m_jnl',    {});
+}
+function persist() {
+  localStorage.setItem('m_habits', JSON.stringify(habits));
+  localStorage.setItem('m_comps',  JSON.stringify(comps));
+  localStorage.setItem('m_jnl',    JSON.stringify(jnl));
+}
+
+/* ── Navigation ─────────────────────────────────────────────── */
+function goTo(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // sidebar + mobile nav buttons
+  document.querySelectorAll('.nav-btn, .mob-btn').forEach(b => b.classList.remove('active'));
+
+  document.getElementById('page-' + id).classList.add('active');
+
+  // mark all buttons with the same target active
+  document.querySelectorAll(`.nav-btn[onclick*="${id}"], .mob-btn[onclick*="${id}"]`)
+    .forEach(b => b.classList.add('active'));
+
+  if (id === 'progress') renderProgress();
+}
+
+/* ── Today ──────────────────────────────────────────────────── */
+function renderToday() {
+  const t  = today();
+  const d  = new Date();
+  const dn = comps[t] || [];
+  const ws = weekStart(t);
+
+  /* header */
+  document.getElementById('today-title').textContent = `${AM[d.getMonth()]} ${d.getDate()}`;
+  document.getElementById('today-sub').textContent   =
+    `${d.getFullYear()} · ${WEEKDAYS[d.getDay()]}`;
+
+  /* stats */
+  const total  = habits.length;
+  const done   = habits.filter(h => dn.includes(h.id)).length;
+  let wd = 0, wt = 0;
+  habits.forEach(h => { wd += weekComp(h.id, ws); wt += h.tpw; });
+  const wpct   = wt ? Math.round(wd / wt * 100) : 0;
+  const streak = calcStreak();
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat">
+      <div class="stat-val">${done}<span style="font-size:1rem;opacity:.5">/${total}</span></div>
+      <div class="stat-lbl">Այսօր</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">${wpct}<span style="font-size:1rem;opacity:.5">%</span></div>
+      <div class="stat-lbl">Շաբաթ</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">${streak}<span style="font-size:1rem;opacity:.5">d</span></div>
+      <div class="stat-lbl">Streak</div>
+    </div>`;
+
+  /* habit rows */
+  if (!habits.length) {
+    document.getElementById('today-habits').innerHTML =
+      '<div class="empty-state">Ավելացրու սովորություններ «Սովորություններ» բաժնում →</div>';
+  } else {
+    document.getElementById('today-habits').innerHTML = habits.map(h => {
+      const on   = dn.includes(h.id);
+      const wc   = weekComp(h.id, ws);
+      const pct  = Math.min(100, Math.round(wc / h.tpw * 100));
+      const full = wc >= h.tpw;
+      return `
+        <div class="hrow">
+          <button class="ckbtn ${on ? 'on' : ''}" onclick="toggle('${h.id}')"></button>
+          <div class="hinfo">
+            <div class="hname ${on ? 'x' : ''}">${esc(h.name)}</div>
+            <div class="ptrack">
+              <div class="pbar"><div class="pfill ${full ? 'full' : ''}" style="width:${pct}%"></div></div>
+              <span class="pcnt">${wc}/${h.tpw} շաբ</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* journal */
+  document.getElementById('journal').value = jnl[t] || '';
+}
+
+function toggle(id) {
+  const t = today();
+  if (!comps[t]) comps[t] = [];
+  const i = comps[t].indexOf(id);
+  if (i > -1) comps[t].splice(i, 1); else comps[t].push(id);
+  persist();
+  renderToday();
+  if (selDay === t) renderDayDetail(t);
+  if (document.getElementById('page-progress').classList.contains('active')) renderProgress();
+}
+
+function saveJournal() {
+  const t = today();
+  const v = document.getElementById('journal').value.trim();
+  if (v) jnl[t] = v; else delete jnl[t];
+  persist();
+  const toast = document.getElementById('saved-toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+/* ── Habits management ──────────────────────────────────────── */
+function addHabit() {
+  const name = document.getElementById('h-name').value.trim();
+  const tpw  = Math.min(7, Math.max(1, parseInt(document.getElementById('h-freq').value) || 3));
+  if (!name) { document.getElementById('h-name').focus(); return; }
+  habits.push({ id: Date.now().toString(), name, tpw, created: today() });
+  persist();
+  document.getElementById('h-name').value = '';
+  renderManage();
+  renderToday();
+}
+
+function deleteHabit(id) {
+  const h = habits.find(x => x.id === id);
+  if (!h) return;
+  if (!confirm(`«${h.name}» — հեռացնե՞լ այս սովորությունը։`)) return;
+  habits = habits.filter(x => x.id !== id);
+  persist();
+  renderManage();
+  renderToday();
+}
+
+function renderManage() {
+  if (!habits.length) {
+    document.getElementById('hmanage').innerHTML =
+      '<div class="empty-state">Դեռ սովորություններ չկան</div>';
+    return;
+  }
+  // show total completions per habit
+  document.getElementById('hmanage').innerHTML = habits.map(h => {
+    const total = Object.values(comps).filter(arr => arr.includes(h.id)).length;
+    return `
+      <div class="mrow">
+        <div class="mdot"></div>
+        <div class="mname">${esc(h.name)}</div>
+        <div class="mfreq">${h.tpw}×/շաբ &nbsp;·&nbsp; ${total} ընդ.</div>
+        <button class="delbtn" onclick="deleteHabit('${h.id}')" title="Հեռացնել">✕</button>
+      </div>`;
+  }).join('');
+}
+
+/* ── Helpers ────────────────────────────────────────────────── */
+function weekComp(id, ws) {
+  let c = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(ws + 'T00:00:00');
+    d.setDate(d.getDate() + i);
+    const s = toDS(d);
+    if (comps[s]?.includes(id)) c++;
+  }
+  return c;
+}
+
+function calcStreak() {
+  if (!habits.length) return 0;
+  let s = 0;
+  const d = new Date();
+  const t = today();
+  for (let i = 0; i < 400; i++) {
+    const ds  = toDS(d);
+    const dn  = comps[ds] || [];
+    const all = habits.every(h => dn.includes(h.id));
+    if (all) s++;
+    else if (ds !== t) break;
+    d.setDate(d.getDate() - 1);
+  }
+  return s;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Progress page ──────────────────────────────────────────── */
+function renderProgress() {
+  renderCal();
+  renderWeekProg();
+  if (selDay) renderDayDetail(selDay);
+}
+
+/* ── Calendar ───────────────────────────────────────────────── */
+function renderCal() {
+  const now = new Date();
+  if (calY === undefined) { calY = now.getFullYear(); calM = now.getMonth(); }
+
+  document.getElementById('cal-title').textContent = `${AM[calM]} ${calY}`;
+
+  document.getElementById('cal-hdr').innerHTML =
+    AD.map(d => `<div class="cdn">${d}</div>`).join('');
+
+  const first = new Date(calY, calM, 1);
+  let dow = first.getDay() || 7;    // Mon=1
+  const dim = new Date(calY, calM + 1, 0).getDate();
+  const tf  = today();
+
+  let html = '';
+  for (let i = 1; i < dow; i++) html += '<div class="cday empty"></div>';
+
+  for (let d = 1; d <= dim; d++) {
+    const ds = `${calY}-${pad(calM+1)}-${pad(d)}`;
+    const cls = ['cday',
+      ds === tf       ? 'today' : '',
+      comps[ds]?.length ? 'has'   : '',
+      ds === selDay   ? 'sel'   : ''
+    ].filter(Boolean).join(' ');
+    html += `<div class="${cls}" onclick="pickDay('${ds}')">${d}</div>`;
+  }
+  document.getElementById('cal-body').innerHTML = html;
+}
+
+function prevM() { calM--; if (calM < 0) { calM = 11; calY--; } renderCal(); }
+function nextM() { calM++; if (calM > 11) { calM = 0; calY++; } renderCal(); }
+
+function pickDay(ds) {
+  selDay = ds;
+  renderCal();
+  renderDayDetail(ds);
+}
+
+function renderDayDetail(ds) {
+  const [y, m, d] = ds.split('-');
+  document.getElementById('dd-title').textContent =
+    `${AM[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+
+  const dn   = comps[ds] || [];
+  const note = jnl[ds] || '';
+
+  let html = '';
+  if (!habits.length) {
+    html = '<div class="empty-state" style="padding:.6rem 0">Սովորություններ չկան</div>';
+  } else {
+    html = habits.map(h => {
+      const on = dn.includes(h.id);
+      return `<div class="dhi">
+        <div class="dot" style="background:${on ? 'var(--gold)' : 'var(--s3)'}"></div>
+        <span style="color:${on ? 'var(--text)' : 'var(--text3)'};">${esc(h.name)}</span>
+        ${on ? '<span style="margin-left:auto;font-size:.65rem;color:var(--green);">✓</span>' : ''}
+      </div>`;
+    }).join('');
+  }
+
+  if (note) html += `
+    <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border);
+      font-size:.78rem; color:var(--text3); line-height:1.65; font-style:italic;">
+      "${esc(note)}"
+    </div>`;
+
+  document.getElementById('dd-body').innerHTML = html || '<div class="empty-state">Ոչ մի տվյալ</div>';
+}
+
+function renderWeekProg() {
+  const ws = weekStart(today());
+  if (!habits.length) {
+    document.getElementById('week-prog').innerHTML =
+      '<div class="empty-state" style="padding:.6rem 0">Սովորություններ չկան</div>';
+    return;
+  }
+  document.getElementById('week-prog').innerHTML = habits.map(h => {
+    const wc   = weekComp(h.id, ws);
+    const pct  = Math.min(100, Math.round(wc / h.tpw * 100));
+    const full = wc >= h.tpw;
+    return `<div class="wpitem">
+      <div class="wphead">
+        <span class="wpname">${esc(h.name)}</span>
+        <span class="wpnum">${wc} / ${h.tpw}</span>
+      </div>
+      <div class="wpbar"><div class="wpfill ${full ? 'full' : ''}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Sidebar date ───────────────────────────────────────────── */
+function updateSbDate() {
+  const d = new Date();
+  document.getElementById('sb-date').innerHTML =
+    `${AM[d.getMonth()]}<br>${d.getDate()}, ${d.getFullYear()}`;
+}
+
+/* ── Enter key for add form ─────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('h-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addHabit();
+  });
+  document.getElementById('h-freq').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addHabit();
+  });
+  // Auto-save journal on Ctrl+S / Cmd+S
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveJournal();
+    }
+  });
+});
+
+/* ── Init ───────────────────────────────────────────────────── */
+load();
+renderToday();
+renderManage();
+updateSbDate();
+</script>
+</body>
+</html>
